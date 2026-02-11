@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCn2BL2M5a-3c3JgbyeEQTWwZfwPoBEXx0",
@@ -10,8 +11,9 @@ const firebaseConfig = {
   appId: "1:952596006855:web:2f520fa71cea3e16af7be2",
 };
 
-// Empêche Firebase d'être initialisé plusieurs fois (important avec Next.js)
+// 🔥 PROTECTION ANTI DOUBLE INIT (OK)
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Firestore (base de données)
+// Exports
 export const db = getFirestore(app);
+export const auth = getAuth(app);
