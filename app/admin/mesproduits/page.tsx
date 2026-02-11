@@ -1,29 +1,17 @@
+
 "use client";
+export const dynamic = "force-dynamic";
 
 import React from "react";
 import Link from "next/link";
 import {
-  getFirestore,
   collection,
   getDocs,
   deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-
-/* ========= FIREBASE ========= */
-const firebaseConfig = {
-  apiKey: "AIzaSyCn2BL2M5a-3c3JgbyeEQTWwZfwPoBEXx0",
-  authDomain: "opochonmagique.firebaseapp.com",
-  projectId: "opochonmagique",
-  storageBucket: "opochonmagique.appspot.com",
-  messagingSenderId: "952596006855",
-  appId: "1:952596006855:web:2f520fa71cea3e16af7be2",
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { db } from "@/lib/firebase";
 
 /* ========= TYPES ========= */
 type Product = {
