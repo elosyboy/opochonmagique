@@ -151,7 +151,7 @@ export default function PanierPage() {
       return;
     }
 
-    const res = await fetch("/api/create-payment-link", {
+    const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -172,12 +172,12 @@ export default function PanierPage() {
 
     const data = await res.json();
 
-    if (!data?.payment_url) {
-      alert("Lien de paiement invalide");
+    if (!data?.url) {
+      alert("Erreur de redirection vers Stripe");
       return;
     }
 
-    window.location.href = data.payment_url;
+    window.location.href = data.url;
   }
 
   async function applyPromo() {
