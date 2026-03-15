@@ -119,7 +119,14 @@ export default function PanierPage() {
       return null;
     }
 
-    if (!form.email || !form.prenom) {
+    const isInvalidForDelivery =
+      (delivery === "click" && (!form.prenom || !form.email)) ||
+      (delivery === "marseille" &&
+        (!form.prenom || !form.nom || !form.phone || !form.address || !form.city || !form.email)) ||
+      (delivery === "domicile" &&
+        (!form.nom || !form.prenom || !form.email || !form.address || !form.city || !form.zip));
+
+    if (isInvalidForDelivery) {
       alert("Merci de compléter les informations requises.");
       return null;
     }
@@ -153,7 +160,14 @@ export default function PanierPage() {
       return;
     }
 
-    if (!form.email || !form.prenom) {
+    const isInvalidForDelivery =
+      (delivery === "click" && (!form.prenom || !form.email)) ||
+      (delivery === "marseille" &&
+        (!form.prenom || !form.nom || !form.phone || !form.address || !form.city || !form.email)) ||
+      (delivery === "domicile" &&
+        (!form.nom || !form.prenom || !form.email || !form.address || !form.city || !form.zip));
+
+    if (isInvalidForDelivery) {
       alert("Merci de compléter les informations requises.");
       return;
     }
@@ -412,6 +426,7 @@ export default function PanierPage() {
             {delivery === "marseille" && (
               <>
                 <Input label="Nom" value={form.nom} onChange={(v) => setForm((f) => ({ ...f, nom: v }))} />
+                <Input label="Prénom" value={form.prenom} onChange={(v) => setForm((f) => ({ ...f, prenom: v }))} />
                 <Input label="Téléphone" value={form.phone} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
                 <Input label="Adresse" value={form.address} onChange={(v) => setForm((f) => ({ ...f, address: v }))} />
                 <Input label="Ville" value={form.city} onChange={(v) => setForm((f) => ({ ...f, city: v }))} />
