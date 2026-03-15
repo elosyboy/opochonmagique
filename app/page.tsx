@@ -166,12 +166,7 @@ export default function Home() {
             />
 
             {/* Center */}
-            <Link href="/" className="flex items-center gap-3">
-              <img
-                src="/assets/feuille.png"
-                alt="Opochon Magique"
-                className="h-10 w-10 object-contain animate-spin-slow drop-shadow-[0_0_22px_rgba(16,185,129,0.6)]"
-              />
+            <Link href="/" className="flex items-center">
               <div className="text-center leading-tight">
                 <div className="text-white font-extrabold tracking-tight text-lg">
                   Ô Pochon Magic
@@ -468,19 +463,20 @@ export default function Home() {
 
       {/* Modal Product Card */}
       {activeProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur">
-          <div className="relative w-[92%] max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 md:p-8 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur px-3 py-4 md:px-6 md:py-8">
+          <div className="relative w-full max-w-md md:max-w-4xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 pt-14 md:p-8 shadow-2xl">
             {/* Close */}
             <button
               onClick={() => setActiveProduct(null)}
-              className="absolute top-4 right-4 text-emerald-900/60 hover:text-emerald-950 text-xl"
+              className="absolute top-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+              aria-label="Fermer"
             >
               ✕
             </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-10">
               {/* Images */}
-              <div className="relative rounded-2xl overflow-hidden bg-emerald-50 h-64 md:h-auto">
+              <div className="relative rounded-2xl overflow-hidden bg-emerald-50 h-52 md:h-auto">
                 <img
                   src={activeProduct.photos?.[activeImageIndex]}
                   alt={activeProduct.name}
@@ -495,7 +491,7 @@ export default function Home() {
                           i === 0 ? activeProduct.photos.length - 1 : i - 1
                         )
                       }
-                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-3 py-2 text-xl font-extrabold text-emerald-950 shadow hover:bg-white transition"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-1.5 text-lg md:text-xl font-extrabold text-emerald-950 shadow hover:bg-white transition"
                     >
                       ‹
                     </button>
@@ -506,7 +502,7 @@ export default function Home() {
                           i === activeProduct.photos.length - 1 ? 0 : i + 1
                         )
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-3 py-2 text-xl font-extrabold text-emerald-950 shadow hover:bg-white transition"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-1.5 text-lg md:text-xl font-extrabold text-emerald-950 shadow hover:bg-white transition"
                     >
                       ›
                     </button>
@@ -530,11 +526,11 @@ export default function Home() {
 
               {/* Info */}
               <div>
-                <h3 className="text-3xl font-extrabold text-emerald-950">
+                <h3 className="text-2xl md:text-3xl font-extrabold text-emerald-950 pr-12">
                   {activeProduct.name}
                 </h3>
 
-                <p className="mt-4 text-emerald-900/80">
+                <p className="mt-3 text-sm md:text-base text-emerald-900/80">
                   {activeProduct.description || "CBD premium sélectionné en boutique."}
                 </p>
 
@@ -549,7 +545,7 @@ export default function Home() {
                         <button
                           key={g.grams}
                           onClick={() => setSelectedGram(g)}
-                          className={`px-4 py-2 rounded-xl border font-bold transition ${
+                          className={`px-3 py-2 rounded-xl border font-bold text-sm md:text-base transition ${
                             selectedGram?.grams === g.grams
                               ? "bg-emerald-600 text-white border-emerald-600"
                               : "border-emerald-900/20 text-emerald-950 hover:bg-emerald-50"
@@ -563,7 +559,7 @@ export default function Home() {
                 )}
 
                 {/* Quantity */}
-                <div className="mt-6 flex items-center gap-4">
+                <div className="mt-5 flex items-center gap-3 flex-wrap">
                   <div className="font-extrabold text-emerald-950">Quantité</div>
                   <div className="flex items-center border border-emerald-900/20 rounded-xl overflow-hidden">
                     <button
@@ -584,8 +580,8 @@ export default function Home() {
 
                 {/* Price & cart */}
                 {selectedGram && (
-                  <div className="mt-8 flex items-center justify-between">
-                    <div className="text-2xl font-extrabold text-emerald-950">
+                  <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="text-xl md:text-2xl font-extrabold text-emerald-950">
                       {selectedGram.price * qty} €
                     </div>
 
@@ -604,7 +600,7 @@ export default function Home() {
                         setCartCount(getCartCount());
                         setActiveProduct(null);
                       }}
-                      className="rounded-2xl bg-emerald-600 px-8 py-4 text-white font-extrabold shadow-lg hover:bg-emerald-700 transition"
+                      className="w-full md:w-auto rounded-2xl bg-emerald-600 px-6 py-3 text-white font-extrabold shadow-lg hover:bg-emerald-700 transition"
                     >
                       Ajouter au panier
                     </button>
