@@ -81,11 +81,14 @@ export default function AccessoirePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <span className="text-white text-sm font-semibold hover:underline">
-                  Retour
-                </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="grid place-items-center h-11 px-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur hover:bg-white/15 transition"
+                aria-label="Retour à la page principale"
+                title="Retour"
+              >
+                <span className="text-white text-sm font-semibold">Retour</span>
               </Link>
               <Link
                 href="/panier"
@@ -157,33 +160,34 @@ export default function AccessoirePage() {
 
       {/* Modal Product */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:px-6 md:py-8">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={() => setSelected(null)}
           />
 
-          <div className="relative w-full max-w-4xl rounded-3xl bg-white p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="relative w-full max-w-md md:max-w-4xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 pt-14 md:p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div className="flex flex-col justify-between">
               <div>
-                <div className="mt-4 flex items-start justify-between gap-4">
-                  <h2 className="text-xl font-extrabold">{selected.name}</h2>
+                <div className="mt-2 flex items-start justify-between gap-4 relative">
+                  <h2 className="text-xl md:text-2xl font-extrabold pr-12">{selected.name}</h2>
                   <button
                     onClick={() => setSelected(null)}
-                    className="rounded-full border px-3 py-1 text-sm font-extrabold hover:bg-emerald-50"
+                    className="absolute -top-11 right-0 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+                    aria-label="Fermer"
                   >
-                    Fermer
+                    ✕
                   </button>
                 </div>
-                <div className="mt-1 text-lg font-black text-emerald-700">
+                <div className="mt-1 text-lg md:text-xl font-black text-emerald-700">
                   {selected.price.toFixed(2)} €
                 </div>
 
-                <p className="mt-3 text-emerald-900/70 text-sm">
+                <p className="mt-3 text-sm md:text-base text-emerald-900/70">
                   {selected.description || "Description à venir."}
                 </p>
 
-                <div className="mt-4 flex items-center gap-4">
+                <div className="mt-4 flex items-center gap-3 flex-wrap">
                   <button
                     onClick={() => setQty(Math.max(1, qty - 1))}
                     className="h-10 w-10 rounded-full border text-xl font-bold"
@@ -232,18 +236,18 @@ export default function AccessoirePage() {
                     window.dispatchEvent(new Event("storage"));
                     setSelected(null);
                   }}
-                  className="mt-6 w-full rounded-2xl bg-emerald-600 text-white py-3 font-extrabold hover:opacity-95 transition"
+                  className="mt-5 w-full rounded-2xl bg-emerald-600 text-white py-3 font-extrabold hover:opacity-95 transition"
                 >
                   Ajouter au panier
                 </button>
               </div>
             </div>
 
-            <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
+            <div className="relative min-h-[260px] md:min-h-0 md:aspect-[3/4] overflow-hidden rounded-2xl bg-emerald-50">
               <img
                 src={selected.photos?.[photoIndex] || "/assets/placeholder.png"}
                 alt={selected.name}
-                className="h-full w-full object-cover"
+                className="h-[260px] md:h-full w-full object-cover"
               />
 
               {selected.photos && selected.photos.length > 1 && (
@@ -256,7 +260,7 @@ export default function AccessoirePage() {
                           : photoIndex - 1
                       )
                     }
-                    className="absolute left-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                   >
                     ‹
                   </button>
@@ -269,7 +273,7 @@ export default function AccessoirePage() {
                           : photoIndex + 1
                       )
                     }
-                    className="absolute right-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                   >
                     ›
                   </button>
