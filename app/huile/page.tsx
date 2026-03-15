@@ -128,8 +128,8 @@ function Modal({
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
-      <div className="absolute inset-x-0 bottom-0 md:inset-0 md:flex md:items-center md:justify-center p-3">
-        <div className="w-full md:max-w-3xl rounded-3xl bg-white border border-emerald-900/10 shadow-2xl overflow-hidden animate-sheet-up">
+      <div className="absolute inset-0 md:flex md:items-center md:justify-center px-3 py-4 md:p-6">
+        <div className="relative w-full md:max-w-3xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-emerald-900/10 shadow-2xl animate-sheet-up">
           {children}
         </div>
       </div>
@@ -212,8 +212,13 @@ export default function HuilePage() {
             </Link>
 
             <div className="flex items-center gap-2">
-              <Link href="/" className="hidden sm:block">
-                <span className="text-white text-sm font-semibold hover:underline">Retour</span>
+              <Link
+                href="/"
+                className="grid place-items-center h-11 px-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur hover:bg-white/15 transition"
+                aria-label="Retour à la page principale"
+                title="Retour"
+              >
+                <span className="text-white text-sm font-semibold">Retour</span>
               </Link>
               <IconBtn
                 href="/panier"
@@ -282,35 +287,36 @@ export default function HuilePage() {
       {/* MODAL */}
       <Modal open={!!selected} onClose={closeProduct}>
         {selected && (
-          <div className="grid md:grid-cols-2 md:min-h-[520px]">
-            <div className="p-6 md:p-8">
-              <div className="flex items-start justify-between gap-4">
+          <div className="grid md:grid-cols-2 md:min-h-[520px] gap-0">
+            <div className="p-5 pt-14 md:p-8">
+              <div className="flex items-start justify-between gap-4 relative">
                 <div>
                   <div className="text-sm font-extrabold text-emerald-900/70">
                     Huile
                   </div>
-                  <h3 className="text-2xl font-extrabold mt-1">{selected.name}</h3>
+                  <h3 className="text-xl md:text-2xl font-extrabold mt-1 pr-12">{selected.name}</h3>
                 </div>
                 <button
                   onClick={closeProduct}
-                  className="rounded-2xl border border-emerald-900/15 px-3 py-2 font-extrabold hover:bg-emerald-50"
+                  className="absolute top-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+                  aria-label="Fermer"
                 >
-                  Fermer
+                  ✕
                 </button>
               </div>
 
               {selected.description && (
-                <p className="mt-4 text-emerald-900/75 leading-relaxed">
+                <p className="mt-3 text-sm md:text-base text-emerald-900/75 leading-relaxed">
                   {selected.description}
                 </p>
               )}
               {selected.price != null && (
-                <div className="mt-4 text-2xl font-extrabold text-emerald-900">
+                <div className="mt-4 text-xl md:text-2xl font-extrabold text-emerald-900">
                   {formatEuro(Number(selected.price))}
                 </div>
               )}
 
-              <div className="mt-6 flex items-center gap-3">
+              <div className="mt-5 flex items-center gap-3 flex-wrap">
                 <div className="flex items-center rounded-2xl border border-emerald-900/15 overflow-hidden">
                   <button
                     className="px-4 py-3 font-extrabold hover:bg-emerald-50"
@@ -343,7 +349,7 @@ export default function HuilePage() {
 
                     closeProduct();
                   }}
-                  className="flex-1 rounded-2xl px-5 py-3 font-extrabold shadow-sm transition bg-emerald-600 text-white hover:opacity-95"
+                  className="w-full md:flex-1 rounded-2xl px-5 py-3 font-extrabold shadow-sm transition bg-emerald-600 text-white hover:opacity-95"
                 >
                   Ajouter au panier
                 </button>
@@ -351,8 +357,8 @@ export default function HuilePage() {
 
             </div>
 
-            <div className="bg-emerald-50 border-l border-emerald-900/10">
-              <div className="relative w-full h-full">
+            <div className="bg-emerald-50 p-0 md:p-0 border-t md:border-t-0 md:border-l border-emerald-900/10 flex min-h-[260px] md:min-h-0">
+              <div className="relative w-full h-[260px] md:h-full bg-white overflow-hidden">
                 {photos.length ? (
                   <img
                     src={photos[Math.min(photoIndex, photos.length - 1)]}
@@ -367,13 +373,13 @@ export default function HuilePage() {
                   <>
                     <button
                       onClick={() => canPrev && setPhotoIndex((i) => i - 1)}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 rounded-2xl px-3 py-2 font-extrabold bg-white/90"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-base font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur"
                     >
                       ‹
                     </button>
                     <button
                       onClick={() => canNext && setPhotoIndex((i) => i + 1)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-2xl px-3 py-2 font-extrabold bg-white/90"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-base font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur"
                     >
                       ›
                     </button>
