@@ -88,11 +88,14 @@ export default function ResinePage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <span className="text-white text-sm font-semibold hover:underline">
-                  Retour
-                </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="grid place-items-center h-11 px-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur hover:bg-white/15 transition"
+                aria-label="Retour à la page principale"
+                title="Retour"
+              >
+                <span className="text-white text-sm font-semibold">Retour</span>
               </Link>
               <Link href="/panier" className="relative">
                 <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
@@ -207,26 +210,36 @@ export default function ResinePage() {
       </section>
 
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:px-6 md:py-8">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={() => setSelected(null)}
           />
-          <div className="relative flex w-full max-w-5xl rounded-3xl bg-white p-8 shadow-xl max-h-[80vh] overflow-y-auto animate-slide-up">
-            <div className="flex flex-col justify-center gap-6 flex-1 pr-8">
-              <header className="flex items-center gap-4">
-                <img src="/assets/resine.png" alt="Résine" className="h-12 w-12" />
-                <h2 className="text-3xl font-extrabold">{selected.name}</h2>
+          <div className="relative grid w-full max-w-md md:max-w-5xl md:grid-cols-2 rounded-3xl bg-white shadow-xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto animate-slide-up">
+            <div className="relative flex flex-col justify-center gap-5 p-5 pt-14 md:p-8 md:pr-8">
+              <button
+                onClick={() => setSelected(null)}
+                className="absolute top-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+                aria-label="Fermer"
+              >
+                ✕
+              </button>
+
+              <header className="flex items-center gap-4 pr-12">
+                <img src="/assets/resine.png" alt="Résine" className="h-10 w-10 md:h-12 md:w-12" />
+                <h2 className="text-2xl md:text-3xl font-extrabold">{selected.name}</h2>
               </header>
 
-              <p className="text-emerald-900/70">{selected.description || "Description à venir."}</p>
+              <p className="text-sm md:text-base text-emerald-900/70">
+                {selected.description || "Description à venir."}
+              </p>
 
               {selected.flavors && (
                 <div className="flex flex-wrap gap-2">
                   {selected.flavors.map((f) => (
                     <span
                       key={f}
-                      className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold capitalize"
+                      className="rounded-full bg-emerald-100 px-3 py-1 text-xs md:text-sm font-semibold capitalize"
                     >
                       {f}
                     </span>
@@ -240,7 +253,7 @@ export default function ResinePage() {
                     <button
                       key={row.grams}
                       onClick={() => setSelectedWeight(row)}
-                      className={`px-4 py-2 rounded-full border font-semibold ${
+                      className={`px-3 py-2 rounded-xl border text-sm md:text-base font-semibold ${
                         selectedWeight?.grams === row.grams
                           ? "bg-emerald-600 text-white border-emerald-600"
                           : "bg-white"
@@ -252,7 +265,7 @@ export default function ResinePage() {
                 </div>
               )}
 
-              <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-3 flex-wrap mt-4">
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
                   className="h-10 w-10 rounded-full border text-xl font-bold"
@@ -270,14 +283,14 @@ export default function ResinePage() {
 
               {selectedWeight && (
                 <>
-                  <div className="mt-6 text-xl font-extrabold">
+                  <div className="mt-5 text-xl md:text-2xl font-extrabold">
                     {(Number(selectedWeight.price) * qty).toFixed(2)} €
                   </div>
                   <button
                     onClick={() => {
                       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-                      const key = `fleur:${selected.id}:${selectedWeight.grams}:${selectedWeight.price}`;
+                      const key = `resine:${selected.id}:${selectedWeight.grams}:${selectedWeight.price}`;
 
                       const existing = cart.find((i: any) => i.key === key);
 
@@ -292,7 +305,7 @@ export default function ResinePage() {
                           price: Number(selectedWeight.price),
                           qty,
                           photo: selected.photos?.[0],
-                          category: "fleur",
+                          category: "resine",
                         });
                       }
 
@@ -300,7 +313,7 @@ export default function ResinePage() {
                       window.dispatchEvent(new Event("storage"));
                       setSelected(null);
                     }}
-                    className="mt-6 w-full rounded-2xl bg-emerald-600 py-4 text-white font-extrabold text-lg hover:bg-emerald-700 transition"
+                    className="mt-5 w-full rounded-2xl bg-emerald-600 py-3 md:py-4 text-white font-extrabold text-base md:text-lg hover:bg-emerald-700 transition"
                   >
                     Ajouter au panier
                   </button>
@@ -308,13 +321,13 @@ export default function ResinePage() {
               )}
             </div>
 
-            <div className="flex flex-1 items-center justify-center">
+            <div className="flex items-center justify-center bg-emerald-50 border-t md:border-t-0 md:border-l border-emerald-900/10 min-h-[260px] md:min-h-0 p-3 md:p-0">
               {selected.photos && selected.photos.length > 0 && (
-                <div className="relative w-full max-w-md">
+                <div className="relative w-full max-w-md min-h-[260px] md:min-h-0">
                   <img
                     src={selected.photos[photoIndex]}
                     alt={selected.name}
-                    className="h-[360px] w-full object-contain"
+                    className="h-[260px] md:h-[360px] w-full object-contain"
                   />
 
                   {selected.photos && selected.photos.length > 1 && (
@@ -327,7 +340,7 @@ export default function ResinePage() {
                               : photoIndex - 1
                           )
                         }
-                        className="absolute left-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                       >
                         ‹
                       </button>
@@ -340,7 +353,7 @@ export default function ResinePage() {
                               : photoIndex + 1
                           )
                         }
-                        className="absolute right-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                       >
                         ›
                       </button>
