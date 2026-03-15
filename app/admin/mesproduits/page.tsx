@@ -21,6 +21,7 @@ type Product = {
   description?: string;
   photos?: string[];
   price?: number;
+  priceByGrams?: { grams: string; price: string }[];
   promo?: boolean;
   promoPrice?: number;
   bestSeller?: boolean;
@@ -35,6 +36,9 @@ export default function MesProduitsPage() {
 
   const [editing, setEditing] = React.useState<Product | null>(null);
   const [form, setForm] = React.useState<any>({});
+
+  const categoryUsesGrams = (category: string) =>
+    category === "fleur" || category === "resine";
 
   async function loadProducts() {
     setLoading(true);
@@ -53,11 +57,21 @@ export default function MesProduitsPage() {
   }
 
   function editProduct(p: Product) {
+    const usesGrams = categoryUsesGrams(p.category);
+
     setEditing(p);
     setForm({
-      name: p.name,
-      category: p.category,
-      price: p.price || "",
+      name: p.name || "",
+      category: p.category || "",
+      description: p.description || "",
+      price: !usesGrams ? p.price || "" : "",
+      priceByGrams:
+        usesGrams && p.priceByGrams && p.priceByGrams.length > 0
+          ? p.priceByGrams.map((row) => ({
+              grams: row.grams || "",
+              price: row.price || "",
+            }))
+          : [{ grams: "", price: "" }],
       promo: p.promo || false,
       promoPrice: p.promoPrice || "",
       bestSeller: p.bestSeller || false,
@@ -67,10 +81,21 @@ export default function MesProduitsPage() {
   async function saveProduct() {
     if (!editing) return;
 
+    const usesGrams = categoryUsesGrams(form.category);
+    const cleanedPriceByGrams = usesGrams
+      ? (form.priceByGrams || []).filter(
+          (row: { grams: string; price: string }) =>
+            String(row.grams || "").trim() !== "" &&
+            String(row.price || "").trim() !== ""
+        )
+      : [];
+
     await updateDoc(doc(db, "products", editing.id), {
       name: form.name,
       category: form.category,
-      price: form.price ? Number(form.price) : null,
+      description: form.description || "",
+      price: !usesGrams && form.price !== "" ? Number(form.price) : null,
+      priceByGrams: usesGrams ? cleanedPriceByGrams : [],
       promo: form.promo,
       promoPrice: form.promo ? Number(form.promoPrice) : null,
       bestSeller: form.bestSeller,
@@ -78,6 +103,34 @@ export default function MesProduitsPage() {
 
     setEditing(null);
     loadProducts();
+  }
+  function updatePriceRow(index: number, field: "grams" | "price", value: string) {
+    setForm((prev: any) => {
+      const nextRows = [...(prev.priceByGrams || [])];
+      nextRows[index] = {
+        ...(nextRows[index] || { grams: "", price: "" }),
+        [field]: value,
+      };
+      return { ...prev, priceByGrams: nextRows };
+    });
+  }
+
+  function addPriceRow() {
+    setForm((prev: any) => ({
+      ...prev,
+      priceByGrams: [...(prev.priceByGrams || []), { grams: "", price: "" }],
+    }));
+  }
+
+  function removePriceRow(index: number) {
+    setForm((prev: any) => {
+      const currentRows = [...(prev.priceByGrams || [])];
+      const nextRows = currentRows.filter((_: any, i: number) => i !== index);
+      return {
+        ...prev,
+        priceByGrams: nextRows.length > 0 ? nextRows : [{ grams: "", price: "" }],
+      };
+    });
   }
 
   React.useEffect(() => {
@@ -141,7 +194,10 @@ export default function MesProduitsPage() {
 
                 <div>
                   <div className="font-extrabold">{p.name}</div>
-                  <div className="text-sm">{p.category}</div>
+                  <div className="text-sm capitalize">{p.category}</div>
+                  {p.description && (
+                    <div className="text-sm mt-2 text-black/70">{p.description}</div>
+                  )}
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
@@ -155,6 +211,23 @@ export default function MesProduitsPage() {
                       Promo
                     </span>
                   )}
+                </div>
+
+                <div className="text-sm space-y-1">
+                  {Array.isArray(p.priceByGrams) && p.priceByGrams.length > 0 ? (
+                    <div className="space-y-1">
+                      {p.priceByGrams.map((row, index) => (
+                        <div key={index} className="flex justify-between gap-3 border-b border-black/10 pb-1">
+                          <span>{row.grams} g</span>
+                          <span>{row.price} €</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : p.price ? (
+                    <div>
+                      Prix : <span className="font-semibold">{p.price} €</span>
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="flex gap-3 mt-auto">
@@ -188,10 +261,34 @@ export default function MesProduitsPage() {
               className="w-full border border-black rounded-xl px-4 py-2"
               placeholder="Nom"
             />
+            <textarea
+              value={form.description || ""}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="w-full border border-black rounded-xl px-4 py-2 min-h-[120px]"
+              placeholder="Description"
+            />
 
             <select
               value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
+              onChange={(e) => {
+                const nextCategory = e.target.value;
+                setForm({
+                  ...form,
+                  category: nextCategory,
+                  price:
+                    nextCategory === "fleur" || nextCategory === "resine"
+                      ? ""
+                      : form.price,
+                  priceByGrams:
+                    nextCategory === "fleur" || nextCategory === "resine"
+                      ? form.priceByGrams?.length
+                        ? form.priceByGrams
+                        : [{ grams: "", price: "" }]
+                      : [],
+                });
+              }}
               className="w-full border border-black rounded-xl px-4 py-2"
             >
               <option value="fleur">Fleur</option>
@@ -201,13 +298,59 @@ export default function MesProduitsPage() {
               <option value="accessoire">Accessoire</option>
             </select>
 
-            <input
-              type="number"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-              className="w-full border border-black rounded-xl px-4 py-2"
-              placeholder="Prix"
-            />
+            {categoryUsesGrams(form.category) ? (
+              <div className="space-y-3">
+                <div className="font-semibold">Prix par grammes</div>
+
+                {(form.priceByGrams || []).map(
+                  (row: { grams: string; price: string }, index: number) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        value={row.price}
+                        onChange={(e) =>
+                          updatePriceRow(index, "price", e.target.value)
+                        }
+                        className="flex-1 border border-black rounded-xl px-4 py-2"
+                        placeholder="Prix"
+                      />
+                      <input
+                        type="number"
+                        value={row.grams}
+                        onChange={(e) =>
+                          updatePriceRow(index, "grams", e.target.value)
+                        }
+                        className="flex-1 border border-black rounded-xl px-4 py-2"
+                        placeholder="Gramme"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePriceRow(index)}
+                        className="border border-black rounded-xl px-3 py-2 font-semibold"
+                      >
+                        −
+                      </button>
+                    </div>
+                  )
+                )}
+
+                <button
+                  type="button"
+                  onClick={addPriceRow}
+                  className="w-full border border-black rounded-xl py-2 font-semibold"
+                >
+                  Ajouter une ligne prix / gramme
+                </button>
+              </div>
+            ) : (
+              <input
+                type="number"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+                className="w-full border border-black rounded-xl px-4 py-2"
+                placeholder="Prix"
+              />
+            )}
 
             <label className="flex items-center gap-2">
               <input

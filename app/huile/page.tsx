@@ -205,7 +205,7 @@ export default function HuilePage() {
             <img src="/assets/huile.png" className="h-11 w-11 object-contain" />
 
             <Link href="/" className="text-center">
-              <div className="text-white font-extrabold text-lg">Opochon Magique</div>
+              <div className="text-white font-extrabold text-lg">Ô Pochon Magic</div>
               <div className="text-white/80 text-xs tracking-[0.35em] uppercase">
                 CBD Premium
               </div>

@@ -116,15 +116,15 @@ export default function PanierPage() {
   async function submitOrder(paid: boolean) {
     if (items.length === 0) {
       alert("Panier vide");
-      return;
+      return null;
     }
 
     if (!form.email || !form.prenom) {
       alert("Merci de compléter les informations requises.");
-      return;
+      return null;
     }
 
-    await addDoc(collection(db, "orders"), {
+    const doc = await addDoc(collection(db, "orders"), {
       items,
       subtotal,
       discount,
@@ -137,7 +137,14 @@ export default function PanierPage() {
     });
 
     localStorage.removeItem("cart");
-    router.push("/app/admin/page.tsx?paid=0");
+    return doc.id;
+  }
+
+  async function startCheckout() {
+    const orderId = await submitOrder(false);
+    if (!orderId) return;
+
+    router.push(`/paiement?order=${orderId}`);
   }
 
   async function redirectToPayment() {
@@ -233,7 +240,7 @@ export default function PanierPage() {
             <img src="/assets/feuille.png" className="h-11 w-11 object-contain" />
 
             <Link href="/" className="text-center">
-              <div className="text-white font-extrabold text-lg">Opochon Magique</div>
+              <div className="text-white font-extrabold text-lg">Opochon Magic</div>
               <div className="text-white/80 text-xs tracking-[0.35em] uppercase">
                 CBD Premium
               </div>
@@ -454,7 +461,7 @@ export default function PanierPage() {
           </div>
 
           <button
-            onClick={redirectToPayment}
+            onClick={startCheckout}
             className="mt-6 w-full rounded-2xl bg-emerald-600 py-4 text-white font-extrabold"
             disabled={items.length === 0}
           >

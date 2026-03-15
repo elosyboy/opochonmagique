@@ -17,6 +17,7 @@ import {
   getDocs,
   doc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import Link from "next/link";
 
@@ -571,15 +572,71 @@ function AdminDashboard() {
 
               return (
                 <div key={o.id} className="border border-black rounded-xl p-5 flex flex-col gap-3">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <div className="font-extrabold text-black">Commande {orderRef}</div>
-                      <div className="text-sm text-black">{clientEmail || "Email client inconnu"}</div>
+                  {/* Expanded order info */}
+                  <div className="flex flex-col gap-2">
+                    <div className="font-extrabold text-black">Commande {orderRef}</div>
+
+                    <div className="text-sm text-black">
+                      Client : {o.form?.prenom || ""} {o.form?.nom || ""}
                     </div>
+
+                    <div className="text-sm text-black">
+                      Email : {o.form?.email || clientEmail || "Email inconnu"}
+                    </div>
+
+                    <div className="text-sm text-black">
+                      Téléphone : {o.form?.phone || "—"}
+                    </div>
+
+                    <div className="text-sm text-black">
+                      Adresse : {o.form?.address || "—"}
+                    </div>
+
+                    <div className="text-sm text-black">
+                      Ville : {o.form?.city || "—"}
+                    </div>
+
+                    <div className="text-sm text-black">
+                      Code postal : {o.form?.zip || "—"}
+                    </div>
+
+                    {o.form?.pointRelay && (
+                      <div className="text-sm text-black">
+                        Point relais : {o.form?.pointRelay}
+                      </div>
+                    )}
+
+                    <div className="text-sm text-black">
+                      Livraison : {o.delivery || "Non renseigné"}
+                    </div>
+
+                    <div className="text-sm text-black">
+                      Paiement : {o.paid ? "Payé" : "Non payé"}
+                    </div>
+
                     <div className="text-sm text-black">
                       Statut : <span className="font-semibold">{o.status || "nouvelle"}</span>
                     </div>
                   </div>
+
+                  {/* Ordered products */}
+                  {o.items && (
+                    <div className="border border-black rounded-xl p-3 mt-2">
+                      <div className="font-extrabold text-black mb-2">Produits commandés</div>
+
+                      <ul className="text-sm text-black space-y-1">
+                        {o.items.map((item: any, idx: number) => (
+                          <li key={idx}>
+                            {item.name || item.title || "Produit"} × {item.qty || item.quantity || 1}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-2 font-semibold">
+                        Total : {o.total ? `${o.total} €` : "—"}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex flex-wrap gap-3">
                     <a
@@ -607,6 +664,24 @@ function AdminDashboard() {
                     >
                       Prête (mail)
                     </a>
+
+                    <button
+                      className="border border-red-600 text-red-600 rounded-xl px-4 py-2 font-semibold hover:bg-red-600 hover:text-white transition"
+                      onClick={async () => {
+                        const confirmDelete = confirm("Supprimer cette commande ?");
+                        if (!confirmDelete) return;
+
+                        try {
+                          await deleteDoc(doc(db, "orders", o.id));
+                          setOrders((prev) => prev.filter(x => x.id !== o.id));
+                        } catch (err) {
+                          console.error("Erreur suppression commande:", err);
+                          alert("Impossible de supprimer la commande.");
+                        }
+                      }}
+                    >
+                      Supprimer commande
+                    </button>
                   </div>
                 </div>
               );

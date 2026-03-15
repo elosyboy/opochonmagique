@@ -74,7 +74,7 @@ export default function AccessoirePage() {
 
             <div className="text-center">
               <div className="text-white font-extrabold text-lg">
-                Opochon Magique
+                Ô Pochon Magic
               </div>
               <div className="text-white/80 text-xs tracking-[0.35em] uppercase">
                 CBD Premium

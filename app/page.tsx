@@ -174,7 +174,7 @@ export default function Home() {
               />
               <div className="text-center leading-tight">
                 <div className="text-white font-extrabold tracking-tight text-lg">
-                  Opochon Magique
+                  Ô Pochon Magic
                 </div>
                 <div className="text-white/80 text-[11px] tracking-[0.35em] uppercase">
                   CBD Premium
@@ -399,7 +399,7 @@ export default function Home() {
             </h3>
 
             <p className="mt-6 text-emerald-900/80 leading-relaxed text-lg">
-              Chez <strong>Opochon Magique</strong>, nous avons fait un choix simple :
+              Chez <strong>Ô Pochon Magic</strong>, nous avons fait un choix simple :
               proposer des produits CBD d’une <strong>qualité maximale</strong> à des
               <strong> prix défiant toute concurrence</strong>.
             </p>
@@ -420,7 +420,7 @@ export default function Home() {
           <div className="flex justify-center">
             <img
               src="/assets/image.png"
-              alt="Qualité CBD Opochon Magique"
+              alt="Qualité CBD Ô Pochon Magic"
               className="h-64 w-auto object-contain"
             />
           </div>
@@ -469,7 +469,7 @@ export default function Home() {
       {/* Modal Product Card */}
       {activeProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur">
-          <div className="relative w-full max-w-4xl rounded-3xl bg-white p-8 shadow-2xl">
+          <div className="relative w-[92%] max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 md:p-8 shadow-2xl">
             {/* Close */}
             <button
               onClick={() => setActiveProduct(null)}
@@ -478,9 +478,9 @@ export default function Home() {
               ✕
             </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
               {/* Images */}
-              <div className="relative rounded-2xl overflow-hidden bg-emerald-50">
+              <div className="relative rounded-2xl overflow-hidden bg-emerald-50 h-64 md:h-auto">
                 <img
                   src={activeProduct.photos?.[activeImageIndex]}
                   alt={activeProduct.name}
@@ -641,7 +641,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 text-xs text-emerald-900/60">
-            © {new Date().getFullYear()} Opochon Magique — Tous droits réservés.
+            © {new Date().getFullYear()} Ô Pochon Magic — Tous droits réservés.
           </div>
         </div>
       </footer>
