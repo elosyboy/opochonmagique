@@ -144,8 +144,8 @@ function Modal({
         className="absolute inset-0 bg-black/50"
         onClick={onClose}
       />
-      <div className="absolute inset-x-0 bottom-0 md:inset-0 md:flex md:items-center md:justify-center p-3">
-        <div className="w-full md:max-w-3xl rounded-3xl bg-white border border-emerald-900/10 shadow-2xl overflow-hidden animate-sheet-up">
+      <div className="absolute inset-0 md:flex md:items-center md:justify-center px-3 py-4 md:p-6">
+        <div className="relative w-full md:max-w-3xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto rounded-3xl bg-white border border-emerald-900/10 shadow-2xl animate-sheet-up">
           {children}
         </div>
       </div>
@@ -245,8 +245,13 @@ export default function FleurPage() {
             </Link>
 
             <div className="flex items-center gap-2">
-              <Link href="/" className="hidden sm:block">
-                <span className="text-white text-sm font-semibold hover:underline">Retour</span>
+              <Link
+                href="/"
+                className="grid place-items-center h-11 px-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur hover:bg-white/15 transition"
+                aria-label="Retour à la page principale"
+                title="Retour"
+              >
+                <span className="text-white text-sm font-semibold">Retour</span>
               </Link>
               <IconBtn
                 href="/panier"
@@ -359,30 +364,31 @@ export default function FleurPage() {
       {/* MODAL PRODUIT */}
       <Modal open={!!selected} onClose={closeProduct}>
         {selected && (
-          <div className="grid md:grid-cols-2 md:min-h-[520px]">
+          <div className="grid md:grid-cols-2 md:min-h-[520px] gap-0">
             {/* Left: infos + actions */}
-            <div className="p-6 md:p-8">
-              <div className="flex items-start justify-between gap-4">
+            <div className="p-5 pt-14 md:p-8">
+              <div className="flex items-start justify-between gap-4 relative">
                 <div>
                   <div className="text-sm font-extrabold text-emerald-900/70">
                     Fleur
                   </div>
-                  <h3 className="text-2xl font-extrabold mt-1">{selected.name}</h3>
+                  <h3 className="text-xl md:text-2xl font-extrabold mt-1 pr-12">{selected.name}</h3>
                 </div>
                 <button
                   onClick={closeProduct}
-                  className="rounded-2xl border border-emerald-900/15 px-3 py-2 font-extrabold hover:bg-emerald-50"
+                  className="absolute top-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+                  aria-label="Fermer"
                 >
-                  Fermer
+                  ✕
                 </button>
               </div>
 
               {selected.description ? (
-                <p className="mt-4 text-emerald-900/75 leading-relaxed">
+                <p className="mt-3 text-sm md:text-base text-emerald-900/75 leading-relaxed">
                   {selected.description}
                 </p>
               ) : (
-                <p className="mt-4 text-emerald-900/60">
+                <p className="mt-3 text-emerald-900/60 text-sm md:text-base">
                   Description disponible bientôt.
                 </p>
               )}
@@ -392,7 +398,7 @@ export default function FleurPage() {
                   {selected.flavors.map((flavor) => (
                     <span
                       key={flavor}
-                      className="rounded-full border border-emerald-900/15 bg-emerald-50 px-3 py-1 text-sm font-extrabold text-emerald-900"
+                      className="rounded-full border border-emerald-900/15 bg-emerald-50 px-3 py-1 text-xs md:text-sm font-extrabold text-emerald-900"
                     >
                       {flavor}
                     </span>
@@ -404,7 +410,7 @@ export default function FleurPage() {
               <div className="mt-6">
                 <div className="font-extrabold mb-3">Sélectionner un prix</div>
                 {selectedRows.length ? (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {selectedRows.map((r, idx) => {
                       const isActive = idx === variantIndex;
                       const priceNum = Number(r.price);
@@ -415,7 +421,7 @@ export default function FleurPage() {
                         <button
                           key={`${r.price}-${r.grams}-${idx}`}
                           onClick={() => setVariantIndex(idx)}
-                          className={`rounded-2xl border px-4 py-3 text-left transition ${
+                          className={`rounded-2xl border px-4 py-3 text-left text-sm md:text-base transition ${
                             isActive
                               ? "border-emerald-600 bg-emerald-50"
                               : "border-emerald-900/15 hover:bg-emerald-50/60"
@@ -451,7 +457,7 @@ export default function FleurPage() {
                 )}
 
                 {/* Selected summary */}
-                <div className="mt-4 rounded-2xl border border-emerald-900/10 bg-white p-4">
+                <div className="mt-4 rounded-2xl border border-emerald-900/10 bg-white p-3 md:p-4">
                   <div className="text-sm text-emerald-900/70 font-extrabold">
                     Sélection actuelle
                   </div>
@@ -467,7 +473,7 @@ export default function FleurPage() {
               </div>
 
               {/* Qty + Add */}
-              <div className="mt-6 flex items-center gap-3">
+              <div className="mt-5 flex items-center gap-3 flex-wrap">
                 <div className="flex items-center rounded-2xl border border-emerald-900/15 overflow-hidden">
                   <button
                     className="px-4 py-3 font-extrabold hover:bg-emerald-50"
@@ -502,7 +508,7 @@ export default function FleurPage() {
                     });
                     closeProduct();
                   }}
-                  className={`flex-1 rounded-2xl px-5 py-3 font-extrabold shadow-sm transition ${
+                  className={`w-full md:flex-1 rounded-2xl px-5 py-3 font-extrabold shadow-sm transition ${
                     selectedVariant
                       ? "bg-emerald-600 text-white hover:opacity-95"
                       : "bg-emerald-200 text-emerald-900/60 cursor-not-allowed"
@@ -514,9 +520,9 @@ export default function FleurPage() {
             </div>
 
             {/* Right: carousel photos */}
-            <div className="bg-emerald-50 p-0 md:p-0 border-t md:border-t-0 md:border-l border-emerald-900/10 flex">
-              <div className="flex-1 rounded-none md:rounded-r-3xl bg-white border-l border-emerald-900/10 overflow-hidden shadow-sm">
-                <div className="relative w-full h-full bg-white overflow-hidden">
+            <div className="bg-emerald-50 p-0 md:p-0 border-t md:border-t-0 md:border-l border-emerald-900/10 flex min-h-[260px] md:min-h-0">
+              <div className="flex-1 rounded-none md:rounded-r-3xl bg-white md:border-l border-emerald-900/10 overflow-hidden shadow-sm min-h-[260px] md:min-h-0">
+                <div className="relative w-full h-[260px] md:h-full bg-white overflow-hidden">
                   <div className="absolute inset-0 bg-black/5" />
                   {photos.length ? (
                     <img
@@ -534,7 +540,7 @@ export default function FleurPage() {
                     <>
                       <button
                         onClick={() => canPrev && setPhotoIndex((i) => i - 1)}
-                        className={`absolute left-3 top-1/2 -translate-y-1/2 rounded-2xl px-3 py-2 font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur ${
+                        className={`absolute left-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-base font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur ${
                           canPrev ? "hover:bg-white" : "opacity-40 cursor-not-allowed"
                         }`}
                         aria-label="Photo précédente"
@@ -543,7 +549,7 @@ export default function FleurPage() {
                       </button>
                       <button
                         onClick={() => canNext && setPhotoIndex((i) => i + 1)}
-                        className={`absolute right-3 top-1/2 -translate-y-1/2 rounded-2xl px-3 py-2 font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur ${
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-base font-extrabold border border-emerald-900/10 bg-white/90 backdrop-blur ${
                           canNext ? "hover:bg-white" : "opacity-40 cursor-not-allowed"
                         }`}
                         aria-label="Photo suivante"
