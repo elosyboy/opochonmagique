@@ -119,11 +119,14 @@ export default function PuffPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <span className="text-white text-sm font-semibold hover:underline">
-                  Retour
-                </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/"
+                className="grid place-items-center h-11 px-3 rounded-2xl bg-white/10 border border-white/20 backdrop-blur hover:bg-white/15 transition"
+                aria-label="Retour à la page principale"
+                title="Retour"
+              >
+                <span className="text-white text-sm font-semibold">Retour</span>
               </Link>
               <Link href="/panier" className="relative">
                 <div className="h-11 w-11 rounded-xl bg-white flex items-center justify-center shadow-sm">
@@ -230,15 +233,15 @@ export default function PuffPage() {
 
       {/* Bottom sheet PRODUIT */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-4 md:px-6 md:py-8">
           <div className="absolute inset-0 bg-black/40" onClick={() => setSelected(null)} />
-          <div className="relative w-full max-w-xs rounded-3xl bg-white p-4 shadow-xl max-h-[80vh] overflow-y-auto animate-slide-up">
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-4 pt-14 shadow-xl max-h-[82vh] md:max-h-[90vh] overflow-y-auto animate-slide-up">
             {selected.photos && selected.photos.length > 0 && (
-              <div className="relative">
+              <div className="relative min-h-[220px] rounded-2xl bg-emerald-50 overflow-hidden">
                 <img
                   src={selected.photos[photoIndex]}
                   alt={selected.name}
-                  className="h-40 mx-auto object-contain"
+                  className="h-[220px] w-full mx-auto object-contain"
                 />
 
                 {selected.photos.length > 1 && (
@@ -251,7 +254,7 @@ export default function PuffPage() {
                             : photoIndex - 1
                         )
                       }
-                      className="absolute left-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                     >
                       ‹
                     </button>
@@ -264,7 +267,7 @@ export default function PuffPage() {
                             : photoIndex + 1
                         )
                       }
-                      className="absolute right-0 top-1/2 -translate-y-1/2 px-3 text-2xl font-bold text-emerald-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded-2xl px-2.5 py-1.5 text-sm md:text-2xl font-bold text-emerald-600 border border-emerald-900/10 bg-white/90 backdrop-blur"
                     >
                       ›
                     </button>
@@ -286,18 +289,19 @@ export default function PuffPage() {
               </div>
             )}
 
-            <div className="mt-4 flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-extrabold">{selected.name}</h2>
+            <div className="mt-4 flex items-start justify-between gap-4 relative">
+              <h2 className="text-xl md:text-2xl font-extrabold pr-12">{selected.name}</h2>
 
               <button
                 onClick={() => setSelected(null)}
-                className="rounded-full border px-3 py-1 text-sm font-extrabold hover:bg-emerald-50"
+                className="absolute -top-11 right-0 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-emerald-900/10 text-emerald-900/70 hover:text-emerald-950 shadow-md"
+                aria-label="Fermer"
               >
-                Fermer
+                ✕
               </button>
             </div>
 
-            <p className="mt-2 text-emerald-900/70">
+            <p className="mt-2 text-sm md:text-base text-emerald-900/70">
               {selected.description || "Description à venir."}
             </p>
 
@@ -306,7 +310,7 @@ export default function PuffPage() {
                 {selected.flavors.map((f) => (
                   <span
                     key={f}
-                    className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold capitalize"
+                    className="rounded-full bg-emerald-100 px-3 py-1 text-xs md:text-sm font-semibold capitalize"
                   >
                     💨 {f}
                   </span>
@@ -314,8 +318,8 @@ export default function PuffPage() {
               </div>
             ) : null}
 
-            <div className="mt-6 flex items-center justify-between">
-              <div className="text-xl font-extrabold">{selected.price.toFixed(2)} €</div>
+            <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
+              <div className="text-xl md:text-2xl font-extrabold">{selected.price.toFixed(2)} €</div>
 
               <div className="flex items-center gap-2">
                 <button
@@ -340,7 +344,7 @@ export default function PuffPage() {
                   const raw = localStorage.getItem("cart");
                   const cart = raw ? JSON.parse(raw) : [];
 
-                  const key = `fleur:${selected.id}:${selected.price}`;
+                  const key = `puff:${selected.id}:${selected.price}`;
 
                   const idx = cart.findIndex((x: any) => x.key === key);
 
@@ -349,7 +353,7 @@ export default function PuffPage() {
                   } else {
                     cart.push({
                       key,
-                      category: "fleur",
+                      category: "puff",
                       productId: selected.id,
                       name: selected.name,
                       photo: selected.photos?.[0] || null,
@@ -364,7 +368,7 @@ export default function PuffPage() {
                 } catch {}
                 setSelected(null);
               }}
-              className="mt-6 w-full rounded-full bg-emerald-600 text-white px-8 py-3 font-extrabold hover:bg-emerald-700 transition"
+              className="mt-5 w-full rounded-2xl bg-emerald-600 text-white px-8 py-3 font-extrabold hover:bg-emerald-700 transition"
             >
               Ajouter au panier
             </button>
