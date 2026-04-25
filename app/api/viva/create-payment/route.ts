@@ -27,13 +27,43 @@ export async function POST(request: Request) {
 
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
+    // 1) Get OAuth token from Viva
+    const tokenResponse = await fetch(
+      "https://accounts.vivapayments.com/connect/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${auth}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "client_credentials",
+        }),
+      }
+    );
+
+    const tokenData = await tokenResponse.json();
+
+    if (!tokenResponse.ok || !tokenData.access_token) {
+      console.error("Erreur token Viva Wallet:", tokenData);
+
+      return NextResponse.json(
+        {
+          error: "Impossible de s'authentifier auprès de Viva Wallet.",
+          details: tokenData,
+        },
+        { status: tokenResponse.status || 500 }
+      );
+    }
+
+    // 2) Create payment order with Bearer token
     const vivaResponse = await fetch(
       "https://api.vivapayments.com/checkout/v2/orders",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Basic ${auth}`,
+          Authorization: `Bearer ${tokenData.access_token}`,
         },
         body: JSON.stringify({
           amount,
