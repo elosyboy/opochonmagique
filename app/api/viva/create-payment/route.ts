@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         },
         body: JSON.stringify({
           amount,
-          sourceCode,
+          sourceCode: Number(sourceCode),
           merchantTrns: orderId ? `Commande ${orderId}` : "Commande Opochon Magic",
           customerTrns: customerTrns || "Commande Opochon Magic",
           customer: {
@@ -76,6 +76,7 @@ export async function POST(request: Request) {
             phone: customer?.phone || undefined,
           },
           paymentTimeout: 1800,
+          requestLang: "fr-FR",
         }),
       }
     );
@@ -86,7 +87,10 @@ export async function POST(request: Request) {
       console.error("Erreur Viva Wallet:", data);
 
       return NextResponse.json(
-        { error: "Viva Wallet a refusé la création du paiement.", details: data },
+        {
+          error: data?.message || data?.error_description || "Viva Wallet a refusé la création du paiement.",
+          details: data,
+        },
         { status: vivaResponse.status || 500 }
       );
     }
