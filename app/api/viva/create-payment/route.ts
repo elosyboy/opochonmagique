@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    message: "API Viva Wallet active. Utilise POST depuis le panier pour créer un paiement.",
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -28,7 +35,6 @@ export async function POST(request: Request) {
 
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-    // 1) Get OAuth token from Viva
     const tokenResponse = await fetch(
       "https://accounts.vivapayments.com/connect/token",
       {
@@ -65,7 +71,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2) Create payment order with Bearer token
     const vivaResponse = await fetch(
       "https://api.vivapayments.com/checkout/v2/orders",
       {
@@ -105,7 +110,11 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         {
-          error: data?.message || data?.error_description || "Viva Wallet a refusé la création du paiement.",
+          error:
+            data?.message ||
+            data?.error_description ||
+            data?.error ||
+            "Viva Wallet a refusé la création du paiement.",
           details: data,
         },
         { status: vivaResponse.status || 500 }

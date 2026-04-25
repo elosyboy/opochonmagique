@@ -169,16 +169,37 @@ export default function PanierPage() {
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data: any = {};
+
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch {
+        data = { raw: responseText };
+      }
 
       if (!response.ok || !data.redirectUrl) {
-        throw new Error(data.error || "Impossible de créer le paiement Viva Wallet.");
+        const message =
+          data?.error ||
+          data?.details?.message ||
+          data?.details?.error_description ||
+          data?.details?.error ||
+          data?.raw ||
+          "Impossible de créer le paiement Viva Wallet.";
+
+        console.error("Réponse erreur Viva Wallet:", data);
+        alert(message);
+        return;
       }
 
       window.location.href = data.redirectUrl;
     } catch (error) {
       console.error("Erreur Viva Wallet:", error);
-      alert("Erreur lors de la redirection vers Viva Wallet.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la redirection vers Viva Wallet."
+      );
     }
   }
 
