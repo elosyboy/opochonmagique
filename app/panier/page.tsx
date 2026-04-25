@@ -151,55 +151,37 @@ export default function PanierPage() {
     const orderId = await submitOrder(false);
     if (!orderId) return;
 
-    router.push(`/paiement?order=${orderId}`);
+    try {
+      const response = await fetch("/api/viva/create-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          amount: Math.round(total * 100),
+          customerTrns: "Commande Opochon Magic",
+          customer: {
+            email: form.email,
+            fullName: `${form.prenom} ${form.nom}`.trim(),
+            phone: form.phone,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.redirectUrl) {
+        throw new Error(data.error || "Impossible de créer le paiement Viva Wallet.");
+      }
+
+      window.location.href = data.redirectUrl;
+    } catch (error) {
+      console.error("Erreur Viva Wallet:", error);
+      alert("Erreur lors de la redirection vers Viva Wallet.");
+    }
   }
 
-  async function redirectToPayment() {
-    if (items.length === 0) {
-      alert("Panier vide");
-      return;
-    }
-
-    const isInvalidForDelivery =
-      (delivery === "click" && (!form.prenom || !form.email)) ||
-      (delivery === "marseille" &&
-        (!form.prenom || !form.nom || !form.phone || !form.address || !form.city || !form.email)) ||
-      (delivery === "domicile" &&
-        (!form.nom || !form.prenom || !form.email || !form.address || !form.city || !form.zip));
-
-    if (isInvalidForDelivery) {
-      alert("Merci de compléter les informations requises.");
-      return;
-    }
-
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items,
-        subtotal,
-        discount,
-        total,
-        promo: promoData,
-        delivery,
-        form,
-      }),
-    });
-
-    if (!res.ok) {
-      alert("Erreur lors de la création du paiement");
-      return;
-    }
-
-    const data = await res.json();
-
-    if (!data?.url) {
-      alert("Erreur de redirection vers Stripe");
-      return;
-    }
-
-    window.location.href = data.url;
-  }
 
   async function applyPromo() {
     setPromoError(null);
