@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { orderId, amount, customerTrns, customer } = body;
+    const vivaAmount = Number(amount);
 
-    if (!amount || amount <= 0) {
+    if (!Number.isFinite(vivaAmount) || vivaAmount <= 0) {
       return NextResponse.json(
         { error: "Montant invalide." },
         { status: 400 }
@@ -41,7 +44,14 @@ export async function POST(request: Request) {
       }
     );
 
-    const tokenData = await tokenResponse.json();
+    const tokenText = await tokenResponse.text();
+    let tokenData: any = {};
+
+    try {
+      tokenData = tokenText ? JSON.parse(tokenText) : {};
+    } catch {
+      tokenData = { raw: tokenText };
+    }
 
     if (!tokenResponse.ok || !tokenData.access_token) {
       console.error("Erreur token Viva Wallet:", tokenData);
@@ -65,17 +75,18 @@ export async function POST(request: Request) {
           Authorization: `Bearer ${tokenData.access_token}`,
         },
         body: JSON.stringify({
-          amount,
-          sourceCode: Number(sourceCode),
+          amount: vivaAmount,
+          sourceCode,
           merchantTrns: orderId ? `Commande ${orderId}` : "Commande Opochon Magic",
           customerTrns: customerTrns || "Commande Opochon Magic",
           customer: {
             email: customer?.email || undefined,
             fullName: customer?.fullName || undefined,
             phone: customer?.phone || undefined,
+            countryCode: "FR",
+            requestLang: "fr-FR",
           },
           paymentTimeout: 1800,
-          requestLang: "fr-FR",
         }),
       }
     );
@@ -106,7 +117,10 @@ export async function POST(request: Request) {
       redirectUrl: `https://www.vivapayments.com/web/checkout?ref=${data.orderCode}`,
     });
   } catch (error) {
-    console.error("Erreur création paiement Viva Wallet:", error);
+    console.error("Erreur création paiement Viva Wallet:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
 
     return NextResponse.json(
       {
