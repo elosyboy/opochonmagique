@@ -1,5 +1,3 @@
-
-
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -38,6 +36,7 @@ export async function POST(request: Request) {
         },
         body: new URLSearchParams({
           grant_type: "client_credentials",
+          scope: "urn:viva:payments:core:api:redirectcheckout",
         }),
       }
     );
@@ -81,7 +80,14 @@ export async function POST(request: Request) {
       }
     );
 
-    const data = await vivaResponse.json();
+    const responseText = await vivaResponse.text();
+    let data: any = {};
+
+    try {
+      data = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      data = { raw: responseText };
+    }
 
     if (!vivaResponse.ok || !data.orderCode) {
       console.error("Erreur Viva Wallet:", data);
@@ -103,7 +109,12 @@ export async function POST(request: Request) {
     console.error("Erreur création paiement Viva Wallet:", error);
 
     return NextResponse.json(
-      { error: "Erreur serveur pendant la création du paiement Viva Wallet." },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Erreur serveur pendant la création du paiement Viva Wallet.",
+      },
       { status: 500 }
     );
   }
