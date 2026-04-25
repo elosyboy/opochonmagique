@@ -143,15 +143,22 @@ export default function PanierPage() {
       createdAt: serverTimestamp(),
     });
 
-    localStorage.removeItem("cart");
+    // Removed: localStorage.removeItem("cart");
     return doc.id;
   }
 
   async function startCheckout() {
-    const orderId = await submitOrder(false);
-    if (!orderId) return;
-
     try {
+      const orderId = await submitOrder(false);
+      if (!orderId) return;
+
+      const amount = Math.round(total * 100);
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        alert("Montant invalide. Vérifie le total du panier.");
+        return;
+      }
+
       const response = await fetch("/api/viva/create-payment", {
         method: "POST",
         headers: {
@@ -159,7 +166,7 @@ export default function PanierPage() {
         },
         body: JSON.stringify({
           orderId,
-          amount: Math.round(total * 100),
+          amount,
           customerTrns: "Commande Opochon Magic",
           customer: {
             email: form.email,
@@ -185,21 +192,19 @@ export default function PanierPage() {
           data?.details?.error_description ||
           data?.details?.error ||
           data?.raw ||
-          "Impossible de créer le paiement Viva Wallet.";
+          `Erreur API Viva Wallet HTTP ${response.status}`;
 
         console.error("Réponse erreur Viva Wallet:", data);
         alert(message);
         return;
       }
 
+      localStorage.removeItem("cart");
       window.location.href = data.redirectUrl;
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
       console.error("Erreur Viva Wallet:", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Erreur lors de la redirection vers Viva Wallet."
-      );
+      alert(message || "Erreur inconnue pendant le paiement Viva Wallet.");
     }
   }
 
